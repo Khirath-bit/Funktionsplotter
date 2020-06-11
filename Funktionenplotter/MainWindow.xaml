@@ -1,0 +1,57 @@
+﻿<Window x:Class="Funktionenplotter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Funktionenplotter"
+        xmlns:controls="clr-namespace:Funktionenplotter.UserControls"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="1300" ResizeMode="NoResize">
+    <Window.DataContext>
+        <local:MainWindowContext/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition x:Name="GraphRow" Height="13*"></RowDefinition>
+            <RowDefinition Height="0.5*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="GraphCol" Width="2.3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <!--Canvas-->
+        <Rectangle x:Name="GraphRectangle" Grid.Row="1" Grid.Column="0" Fill="#3e3e3e"></Rectangle>
+        <Canvas x:Name="Graph" HorizontalAlignment="Center" VerticalAlignment="Center"
+                 RenderTransform="{Binding RenderTransform}" Grid.Row="1" Grid.Column="0">
+            <Line X1="0" X2="0" Y2="320" Y1="-320" Stroke="White" StrokeThickness="{Binding StrokeThicknessY}"></Line>
+            <Line X1="-470" X2="470" Y2="0" Y1="0" Stroke="White" StrokeThickness="{Binding StrokeThicknessX}"></Line>
+            <Polyline
+                Points="{Binding Points, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                Stroke="White"
+                x:Name="MainFunctionLine"
+                StrokeThickness="{Binding StrokeThicknessLine}"/>
+        </Canvas>
+        <Popup Name="floatingTip" AllowsTransparency="True" Placement="Relative" PlacementTarget="{Binding ElementName=MainFunctionLine}">
+            <TextBlock>Look At Me</TextBlock>
+        </Popup>
+        <!--Canvas end-->
+
+        <!--header-->
+        <controls:Header x:Name="ControlHeader" FourthCoefficientGraph="{Binding FourthCoefficientGraph, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         ThirdCoefficientGraph="{Binding ThirdCoefficientGraph, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         SecondCoefficientGraph="{Binding SecondCoefficientGraph, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         FirstCoefficientGraph="{Binding FirstCoefficientGraph, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         B="{Binding B, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+        </controls:Header>
+        <!--header end-->
+        <!--Menue right-->
+        <controls:GraphMenu DataContext="{Binding GraphMenuContext}" Grid.Row="1" Grid.Column="1"></controls:GraphMenu>
+        <!--Menue right end-->
+
+        <!--Logger-->
+        <Rectangle Fill="#3e3e3e" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"></Rectangle>
+        <TextBlock x:Name="logWindow" Background="Transparent" Foreground="White" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"></TextBlock>
+    </Grid>
+</Window>

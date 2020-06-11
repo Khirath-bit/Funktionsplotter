@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="Funktionenplotter.UserControls.GraphMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Funktionenplotter.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Rectangle Fill="#3e3e3e"></Rectangle>
+        <Grid >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Foreground="White" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Text="Strichdicke Graph"/>
+            <TextBlock Foreground="White" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Text="Strichabstand Achse"/>
+            <Slider x:Name="LineThickness" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
+            <TextBox x:Name="LineMarginAxes" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
+            <TextBlock Foreground="White" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Text="X von"/>
+            <TextBlock Foreground="White" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Text="X bis"/>
+            <TextBox Text="{Binding XMin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" x:Name="xFrom" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
+            <TextBox Text="{Binding XMax, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" x:Name="xTo" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
+            <TextBlock Foreground="White" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Text="Y von"/>
+            <TextBlock Foreground="White" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Text="Y bis"/>
+            <TextBox Text="{Binding YMin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" x:Name="yFrom" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
+            <TextBox Text="{Binding YMax, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" x:Name="yTo" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
+            <TextBlock Foreground="White" Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Text="Genauigkeit Rechnung"/>
+            <CheckBox Foreground="White" x:Name="drawFirstDerivation" Grid.Row="6" Content="1. Ableitung zeichnen" ToolTip="1. Ableitung Zeichnen" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <TextBox Text="{Binding CalculationAccuracy, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" x:Name="CalucationAccuracy" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
+            <CheckBox Foreground="White" x:Name="DrawSecondDerivation" Grid.Row="7" Content="2. Ableitung zeichnen" ToolTip="2. Ableitung Zeichnen" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <TextBox Grid.Row="8" IsReadOnly="True" Grid.ColumnSpan="2"  Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Height="Auto"/>
+            <Button Command="{Binding PlotterCommand}" Grid.Row="9" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Plotten" Width="100"/>
+            <Button Grid.Row="9" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Clear" Width="100"/>
+            <CheckBox Foreground="White" x:Name="CalculateIntegral" Grid.Row="10" Content="Integral berechnen" ToolTip="2. Ableitung Zeichnen" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <CheckBox Foreground="White" x:Name="CalculateArea" Grid.Row="10" Content="Fläche berechen" ToolTip="2. Ableitung Zeichnen" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </Grid>
+    </Grid>
+</UserControl>
