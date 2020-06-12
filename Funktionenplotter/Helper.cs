@@ -16,12 +16,15 @@ namespace Funktionenplotter
         /// <returns></returns>
         public static double CalculateStrokeThicknessByTransform(Transform transform, Axis axis)
         {
+            var x = Math.Abs(transform.Value.M11);
+            var y = Math.Abs(transform.Value.M22);
+
             switch (axis)
             {
                 case Axis.X:
-                    return 1 / transform.Value.M11;//M11 = x
+                    return x > y ? Math.Min(1 / y, 1 / x ) * (x / y) : Math.Min(1 / y, 1 / x);
                 case Axis.Y:
-                    return 1 / Math.Abs(transform.Value.M22); //M22 = y
+                    return y > x ? Math.Min(1 / y, 1 / x) * (y / x) : Math.Min(1 / y, 1 / x);
                 case Axis.Line:
                     return (1 / transform.Value.M11 + 1 / transform.Value.M11) / 2;
                 default:

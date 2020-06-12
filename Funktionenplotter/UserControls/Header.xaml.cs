@@ -24,7 +24,7 @@ namespace Funktionenplotter.UserControls
         /// </summary>
         public string FourthCoefficientGraph
         {
-            get => (string)GetValue(FourthCoefficientGraphProperty);
+            get => (string) GetValue(FourthCoefficientGraphProperty);
             set => SetValue(FourthCoefficientGraphProperty, value);
         }
 
@@ -39,7 +39,7 @@ namespace Funktionenplotter.UserControls
         /// </summary>
         public string ThirdCoefficientGraph
         {
-            get => (string)GetValue(ThirdCoefficientGraphProperty);
+            get => (string) GetValue(ThirdCoefficientGraphProperty);
             set => SetValue(ThirdCoefficientGraphProperty, value);
         }
 
@@ -54,7 +54,7 @@ namespace Funktionenplotter.UserControls
         /// </summary>
         public string SecondCoefficientGraph
         {
-            get => (string)GetValue(SecondCoefficientGraphProperty);
+            get => (string) GetValue(SecondCoefficientGraphProperty);
             set => SetValue(SecondCoefficientGraphProperty, value);
         }
 
@@ -69,7 +69,7 @@ namespace Funktionenplotter.UserControls
         /// </summary>
         public string FirstCoefficientGraph
         {
-            get => (string)GetValue(FirstCoefficientGraphProperty);
+            get => (string) GetValue(FirstCoefficientGraphProperty);
             set => SetValue(FirstCoefficientGraphProperty, value);
         }
 
@@ -84,8 +84,38 @@ namespace Funktionenplotter.UserControls
         /// </summary>
         public string B
         {
-            get => (string)GetValue(BProperty);
+            get => (string) GetValue(BProperty);
             set => SetValue(BProperty, value);
+        }
+
+        /// <summary>
+        /// The dependency property of <see cref="HeadlineText"/>
+        /// </summary>
+        public static readonly DependencyProperty SinusCheckedProperty = DependencyProperty.Register(
+            nameof(SinusChecked), typeof(bool), typeof(Header), new PropertyMetadata(default(bool)));
+
+        /// <summary>
+        /// Gets or sets the text of the headline
+        /// </summary>
+        public bool SinusChecked
+        {
+            get => (bool) GetValue(SinusCheckedProperty);
+            set => SetValue(SinusCheckedProperty, value);
+        }
+
+        //// <summary>
+        /// The dependency property of <see cref="HeadlineText"/>
+        /// </summary>
+        public static readonly DependencyProperty CosinusCheckedProperty = DependencyProperty.Register(
+            nameof(CosinusChecked), typeof(bool), typeof(Header), new PropertyMetadata(default(bool)));
+
+        /// <summary>
+        /// Gets or sets the text of the headline
+        /// </summary>
+        public bool CosinusChecked
+        {
+            get => (bool) GetValue(CosinusCheckedProperty);
+            set => SetValue(CosinusCheckedProperty, value);
         }
     }
 }

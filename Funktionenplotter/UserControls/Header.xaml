@@ -22,18 +22,23 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Foreground="White" Grid.Column="0" Grid.ColumnSpan="3" Text="Wunschfunktion (Max 4. Grades)" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <TextBlock Foreground="White" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="f(x)="/>
-            <TextBox Text="{Binding ElementName=HeaderControl, Path=FourthCoefficientGraph}" x:Name="FourthCoefficient" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
-            <TextBlock Foreground="White" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Text="* x^4 +"/>
-            <TextBox Text="{Binding ElementName=HeaderControl, Path=ThirdCoefficientGraph}" x:Name="ThirdCoefficient" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
-            <TextBlock Foreground="White" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center" Text="* x³ +"/>
-            <TextBox Text="{Binding ElementName=HeaderControl, Path=SecondCoefficientGraph}" x:Name="SecondCoefficient" Grid.Column="8" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
-            <TextBlock Foreground="White" Grid.Column="9" HorizontalAlignment="Center" VerticalAlignment="Center" Text="* x² +"/>
-            <TextBox Text="{Binding ElementName=HeaderControl, Path=FirstCoefficientGraph}" x:Name="FirstCoefficient" Grid.Column="10" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
-            <TextBlock Foreground="White" Grid.Column="11" HorizontalAlignment="Center" VerticalAlignment="Center" Text="* x +"/>
-            <TextBox Text="{Binding ElementName=HeaderControl, Path=B}" x:Name="b" Grid.Column="12" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Vertical">
+                <CheckBox IsChecked="{Binding ElementName=HeaderControl, Path=SinusChecked}" Foreground="White" Content="Sinus"></CheckBox>
+                <CheckBox IsChecked="{Binding ElementName=HeaderControl, Path=CosinusChecked}"  Foreground="White" Content="Cosinus"></CheckBox>
+            </StackPanel>
+            <TextBlock Foreground="White" Grid.Column="1" Grid.ColumnSpan="3" Text="Wunschfunktion (Max 4. Grades)" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBlock Foreground="White" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Text="f(x)="/>
+            <TextBox Text="{Binding ElementName=HeaderControl, Path=FourthCoefficientGraph}" x:Name="FourthCoefficient" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
+            <TextBlock Foreground="White" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" Text="* x^4 +"/>
+            <TextBox Text="{Binding ElementName=HeaderControl, Path=ThirdCoefficientGraph}" x:Name="ThirdCoefficient" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
+            <TextBlock Foreground="White" Grid.Column="8" HorizontalAlignment="Center" VerticalAlignment="Center" Text="* x³ +"/>
+            <TextBox Text="{Binding ElementName=HeaderControl, Path=SecondCoefficientGraph}" x:Name="SecondCoefficient" Grid.Column="9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
+            <TextBlock Foreground="White" Grid.Column="10" HorizontalAlignment="Center" VerticalAlignment="Center" Text="* x² +"/>
+            <TextBox Text="{Binding ElementName=HeaderControl, Path=FirstCoefficientGraph}" x:Name="FirstCoefficient" Grid.Column="11" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
+            <TextBlock Foreground="White" Grid.Column="12" HorizontalAlignment="Center" VerticalAlignment="Center" Text="* x +"/>
+            <TextBox Text="{Binding ElementName=HeaderControl, Path=B}" x:Name="b" Grid.Column="13" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50"/>
         </Grid>
     </Grid>
 </UserControl>

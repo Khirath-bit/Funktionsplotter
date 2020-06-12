@@ -31,15 +31,12 @@ namespace Funktionenplotter
 
         private void Graph_MouseMove(object sender, MouseEventArgs e)
         {
-            logWindow.Text = $"Triggered at {DateTime.Now}";
-
-            if (!floatingTip.IsOpen)
-                floatingTip.IsOpen = true;
+            logWindow.Text = $"X: {X.StrokeThickness} | Y: {Y.StrokeThickness}";
 
             var currentPos = e.GetPosition(MainFunctionLine);
 
-            floatingTip.HorizontalOffset = currentPos.X + 20;
-            floatingTip.VerticalOffset = currentPos.Y;
+            DisplayPointX.Text = $"X: {currentPos.X}";
+            DisplayPointY.Text = $"Y: {currentPos.Y}";
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)

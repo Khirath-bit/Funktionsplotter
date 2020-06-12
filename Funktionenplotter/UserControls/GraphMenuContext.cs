@@ -18,15 +18,18 @@ namespace Funktionenplotter.UserControls
         /// </summary>
         private readonly Action<object> _plotterFunction;
 
-        public string XMin { get; set; }
+        public string XMin { get; set; } = "-10";
 
-        public string XMax { get; set; }
+        public string XMax { get; set; } = "10";
 
-        public string YMax { get; set; }
+        public string YMax { get; set; } = "10";
 
-        public string YMin { get; set; }
+        public string YMin { get; set; } = "-10";
 
         public string CalculationAccuracy { get; set; } = "1";
+
+        public bool CalculateFirstDerivative { get; set; }
+        public bool CalculateSecondDerivative { get; set; }
 
         public GraphMenuContext(Action<object> plotterFunction)
         {

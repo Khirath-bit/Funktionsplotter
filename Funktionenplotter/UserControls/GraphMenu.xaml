@@ -39,9 +39,9 @@
             <TextBox Text="{Binding YMin, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" x:Name="yFrom" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
             <TextBox Text="{Binding YMax, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" x:Name="yTo" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
             <TextBlock Foreground="White" Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Text="Genauigkeit Rechnung"/>
-            <CheckBox Foreground="White" x:Name="drawFirstDerivation" Grid.Row="6" Content="1. Ableitung zeichnen" ToolTip="1. Ableitung Zeichnen" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <CheckBox IsChecked="{Binding CalculateFirstDerivative, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Foreground="White" x:Name="drawFirstDerivation" Grid.Row="6" Content="1. Ableitung zeichnen" ToolTip="1. Ableitung Zeichnen" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" />
             <TextBox Text="{Binding CalculationAccuracy, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" x:Name="CalucationAccuracy" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100"/>
-            <CheckBox Foreground="White" x:Name="DrawSecondDerivation" Grid.Row="7" Content="2. Ableitung zeichnen" ToolTip="2. Ableitung Zeichnen" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <CheckBox IsChecked="{Binding CalculateSecondDerivative, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Foreground="White" x:Name="DrawSecondDerivation" Grid.Row="7" Content="2. Ableitung zeichnen" ToolTip="2. Ableitung Zeichnen" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" />
             <TextBox Grid.Row="8" IsReadOnly="True" Grid.ColumnSpan="2"  Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Height="Auto"/>
             <Button Command="{Binding PlotterCommand}" Grid.Row="9" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Plotten" Width="100"/>
             <Button Grid.Row="9" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Clear" Width="100"/>
