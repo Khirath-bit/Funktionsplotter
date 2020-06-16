@@ -31,8 +31,6 @@ namespace Funktionenplotter
 
         private void Graph_MouseMove(object sender, MouseEventArgs e)
         {
-            logWindow.Text = $"X: {X.StrokeThickness} | Y: {Y.StrokeThickness}";
-
             var currentPos = e.GetPosition(MainFunctionLine);
 
             DisplayPointX.Text = $"X: {currentPos.X}";
@@ -46,6 +44,59 @@ namespace Funktionenplotter
 
             context.ActualHeightGraph = (int)GraphRow.ActualHeight;
             context.ActualWidthGraph = (int)GraphCol.ActualWidth;
+        }
+
+        private void ZeroPointList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            return;
+            if (!(DataContext is MainWindowContext context))
+                return;
+            
+            var pointFivePercent = (context.GraphMenuContext.GetMaxXDouble() - context.GraphMenuContext.GetMinXDouble()) * 0.005;
+
+            var x = Helper.ParseX(ZeroPointList.SelectedValue?.ToString());
+            var y = Helper.ParseY(ZeroPointList.SelectedValue?.ToString());
+
+            var redStroke = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+
+            var line1 = new Line
+            {
+                X1 = x + pointFivePercent,
+                Y1 = y + pointFivePercent,
+                X2 = x - pointFivePercent,
+                Y2 = y - pointFivePercent,
+                StrokeThickness = MainFunctionLine.StrokeThickness,
+                Stroke = redStroke,
+                Tag = "cross"
+            };
+
+            var line2 = new Line
+            {
+                X1 = x - pointFivePercent,
+                Y1 = y + pointFivePercent,
+                X2 = x + pointFivePercent,
+                Y2 = y - pointFivePercent,
+                StrokeThickness = MainFunctionLine.StrokeThickness,
+                Stroke = redStroke,
+                Tag = "cross"
+            };
+
+            var childsToRemove = new List<UIElement>();
+
+            foreach (var child in Graph.Children)
+            {
+                if(child is Line line && ReferenceEquals(line.Tag, "cross"))
+                    childsToRemove.Add(line);
+            }
+
+            foreach (var child in childsToRemove)
+            {
+                Graph.Children.Remove(child);
+            }
+
+            Graph.Children.Add(line2);
+            Graph.Children.Add(line1);
         }
     }
 }

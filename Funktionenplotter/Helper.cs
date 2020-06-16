@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace Funktionenplotter
@@ -30,6 +31,20 @@ namespace Funktionenplotter
                 default:
                     return 1;
             }
+        }
+
+        public static double ParseX(string coordinates)
+        {
+            var x = coordinates.Split(' ')[1];
+
+            return !double.TryParse(x, out var xVal) ? default : xVal;
+        }
+
+        public static double ParseY(string coordinates)
+        {
+            var y = coordinates.Split(' ')[4];
+
+            return !double.TryParse(y, out var yVal) ? default : yVal;
         }
     }
 

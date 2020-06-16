@@ -1,76 +1,113 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Funktionenplotter.Utility;
 
 namespace Funktionenplotter.DataObjects
 {
     public class Function
     {
-
         public Function(string fourthCo, string thirdCo, string secondCo, string firstCo, string b)
         {
-            if (string.IsNullOrWhiteSpace(b))
-                B = 0;
-            else if (double.TryParse(b, out var yOffset))
+            if (!string.IsNullOrWhiteSpace(fourthCo)
+                && double.TryParse(fourthCo, out var fourthCoe))
             {
-                B = yOffset;
-            }
+                if(Level == FunctionLevel.None)
+                    Level = FunctionLevel.Fourth;
+                Polynom.Add(fourthCoe);
+            } 
 
-            if (!string.IsNullOrWhiteSpace(firstCo)
-                && double.TryParse(firstCo, out var firstCoe))
+            if (!string.IsNullOrWhiteSpace(thirdCo)
+                && double.TryParse(thirdCo, out var thirdCoe))
             {
-                Level = FunctionLevel.First;
-                FirstCoefficient = firstCoe;
+                if (Level == FunctionLevel.None)
+                    Level = FunctionLevel.Third;
+                Polynom.Add(thirdCoe);
+            } else if (Polynom.Count > 0)
+            {
+                Polynom.Add(0);
             }
 
             if (!string.IsNullOrWhiteSpace(secondCo)
                 && double.TryParse(secondCo, out var secondCoe))
             {
-                Level = FunctionLevel.Second;
-                SecondCoefficient = secondCoe;
+                if (Level == FunctionLevel.None)
+                    Level = FunctionLevel.Second;
+                Polynom.Add(secondCoe);
             }
-
-            if (!string.IsNullOrWhiteSpace(thirdCo)
-                && double.TryParse(thirdCo, out var thirdCoe))
+            else if (Polynom.Count > 0)
             {
-                Level = FunctionLevel.Third;
-                ThirdCoefficient = thirdCoe;
+                Polynom.Add(0);
             }
 
-            if (!string.IsNullOrWhiteSpace(fourthCo)
-                && double.TryParse(fourthCo, out var fourthCoe))
+            if (!string.IsNullOrWhiteSpace(firstCo)
+                && double.TryParse(firstCo, out var firstCoe))
             {
-                Level = FunctionLevel.Fourth;
-                FourthCoefficient = fourthCoe;
+                if (Level == FunctionLevel.None)
+                    Level = FunctionLevel.First;
+                Polynom.Add(firstCoe);
+            }
+            else if (Polynom.Count > 0)
+            {
+                Polynom.Add(0);
             }
 
-            CalculateExtremePoints();
+            if (string.IsNullOrWhiteSpace(b))
+                Polynom.Add(0);
+            else if (double.TryParse(b, out var yOffset))
+            {
+                Polynom.Add(yOffset);
+            }
+
+            FirstDerivative = new Derivative(Polynom);
+
+            if(Level != FunctionLevel.First)
+                SecondDerivative = new Derivative(FirstDerivative.Polynom);
+
             CalculateZeroPoints();
+            CalculateTurningPoints();
         }
-        /// <summary>
-        /// Contains the Function Level
-        /// </summary>
+
+        public List<double> Polynom { get; set; } = new List<double>();
         public FunctionLevel Level { get; set; }
-
-        public double FourthCoefficient { get; set; }
-        public double ThirdCoefficient { get; set; }
-        public double SecondCoefficient { get; set; }
-        public double FirstCoefficient { get; set; }
-        public double B { get; set; }
-
         public List<Point> ExtremePoints { get; set; }
+        public List<Point> TurningPoints { get; set; }
+        public List<Point> SaddlePoints { get; set; }
         public List<Point> ZeroPoints { get; set; } = new List<Point>();
+        public Derivative FirstDerivative { get; set; }
+        public Derivative SecondDerivative { get; set; }
 
+        private void CalculateTurningPoints()
+        {
+            TurningPoints = new List<Point>();
+            SaddlePoints = new List<Point>();
+
+            if(Level == FunctionLevel.First || Level == FunctionLevel.None || Level == FunctionLevel.Second)
+                return;
+
+            var xs = SecondDerivative.CalculateXsForY(0);
+            
+
+            foreach (var x in xs)
+            {
+                if (SecondDerivative.CalculateYForX(x) == 0)
+                    SaddlePoints.Add(new Point(x, CalculateYForX(x)));
+                else
+                    TurningPoints.Add(new Point(x, CalculateYForX(x)));
+            }
+        }
         private void CalculateZeroPoints()
         {
             switch (Level)
             {
                 case FunctionLevel.First:
-                    ZeroPoints.Add(new Point(B, 0));
+                    CalculateZeroPointsFirstLevel();
                     break;
                 case FunctionLevel.Second:
                     CalculateZeroPointsSecondLevel();
@@ -79,139 +116,117 @@ namespace Funktionenplotter.DataObjects
                     CalculateZeroPointsThirdLevel();
                     break;
                 case FunctionLevel.Fourth:
+                    CalculateZeroPointsFourthLevel();
                     break;
                 default:
                     return;
             }
         }
+        private void CalculateZeroPointsFirstLevel()
+        {
+            ZeroPoints.Add(new Point(0, Polynom.Last()));
 
+            if(Polynom.Last() == 0)
+                return;
+
+            var x = -Polynom.Last() / Polynom.First();
+
+            ZeroPoints.Add(new Point(x, 0));
+        }
         private void CalculateZeroPointsSecondLevel()
         {
-            var sqrt = Math.Sqrt(Math.Pow(FirstCoefficient, 2) - 4 * SecondCoefficient * B);
+            var sqrt = Math.Sqrt(Math.Pow(Polynom[1], 2) - 4 * Polynom.First() * Polynom.Last());
 
             if (double.IsNaN(sqrt))
                 return;
 
-            var x1 = (-FirstCoefficient + sqrt) / (2 * SecondCoefficient);
+            var x1 = (-Polynom[1] + sqrt) / (2 * Polynom.First());
 
-            var x2 = (-FirstCoefficient - sqrt) / (2 * SecondCoefficient);
+            var x2 = (-Polynom[1] - sqrt) / (2 * Polynom.First());
 
             ZeroPoints.Add(new Point(x1, 0));
             ZeroPoints.Add(new Point(x2, 0));
+            ZeroPoints.Add(new Point(0, Polynom.Last())); //x = 0 == b
         }
-
         private void CalculateZeroPointsThirdLevel()
         {
-            //Polynomdivision
+            var x = 4.0;
 
-            ZeroPoints.Add(new Point(x1, B));
-            ZeroPoints.Add(new Point(x2, 0));
-            ZeroPoints.Add(new Point(x3, 0));
+            //Newton verfahren
+            for (var i = 0; i < 100; i++)
+                x -= CalculateYForX(x) / FirstDerivative.CalculateYForX(x);
+
+            //Polynom division
+            var func = MathOperations.PolynomialDivision(Polynom,
+                new List<double> { 1, -x });
+
+            //Mitternachtsformel
+            var zeros = MathOperations.ApplyQuadraticFormula(func);
+
+            if(zeros != null)
+                ZeroPoints.AddRange(zeros);
+
+            ZeroPoints.Add(new Point(x, 0));
+            ZeroPoints.Add(new Point(0, Polynom.Last()));
         }
-
-        private void CalculateExtremePoints()
+        private void CalculateZeroPointsFourthLevel()
         {
-            switch (Level)
-            {
-                case FunctionLevel.First:
-                    return;
-                case FunctionLevel.Second:
-                    CalculateExtremePointsSecondLevel();
-                    break;
-                case FunctionLevel.Third:
-                    break;
-                case FunctionLevel.Fourth:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            var x = 4.0;
+
+            //Newton verfahren
+            for (var i = 0; i < 100; i++)
+                x -= CalculateYForX(x) / FirstDerivative.CalculateYForX(x);
+
+            //Polynom division
+            var func = MathOperations.PolynomialDivision(Polynom,
+                new List<double> { 1, -x });
+
+            var funct = new Function("", func[0].ToString(), func[1].ToString(), func[2].ToString(), func[3].ToString());
+            funct.ZeroPoints?.RemoveAt(funct.ZeroPoints.Count-1); //y zero point is wrong for this graph
+
+            if (funct.ZeroPoints != null)
+                ZeroPoints.AddRange(funct.ZeroPoints);
+
+            ZeroPoints.Add(new Point(0, Polynom.Last())); //x=0 remains only B
+            ZeroPoints.Add(new Point(x, 0));
         }
-
-        private void CalculateExtremePointsSecondLevel()
-        {
-            var secondCoefficient = SecondCoefficient * 2;
-            var firstCoefficient = FirstCoefficient;// 0 = secondCo * x + firstCo
-
-            var x = -(firstCoefficient / secondCoefficient); // sum = x;
-        }
-
-        public double CalculateFirstDerivative(double x)
-        {
-            switch (Level)
-            {
-                case FunctionLevel.First:
-                    return -1;
-                case FunctionLevel.Second:
-                    return 2 * SecondCoefficient + FirstCoefficient;
-                case FunctionLevel.Third:
-                    return 3 * ThirdCoefficient * Math.Pow(x, 2) + 2 * SecondCoefficient * x + FirstCoefficient;
-                case FunctionLevel.Fourth:
-                    return 4 * FourthCoefficient * Math.Pow(x, 3) + 3 * ThirdCoefficient * Math.Pow(x, 2) +
-                           2 * SecondCoefficient * x + FirstCoefficient;
-                default:
-                    return -1;
-            }
-        }
-
-        public double CalculateSecondDerivative(double x)
-        {
-            switch (Level)
-            {
-                case FunctionLevel.First:
-                    return -1;
-                case FunctionLevel.Second:
-                    return -1;
-                case FunctionLevel.Third:
-                    return 6 * ThirdCoefficient * x + 2 * SecondCoefficient;
-                case FunctionLevel.Fourth:
-                    return 12 * FirstCoefficient * Math.Pow(x, 2) + 6 * ThirdCoefficient * x + 2 * SecondCoefficient;
-                default:
-                    return -1;
-            }
-        }
-
         public double CalculateYForX(double x)
         {
+            var result = 0.0;
+
+            for (var i = 0; i < Polynom.Count - 1; i++)
+            {
+                result += Polynom[i] * Math.Pow(x, Polynom.Count - 1 - i);
+            }
+
+            result += Polynom.Last();
+
+            return result;
+        }
+
+        public override string ToString()
+        {
             switch (Level)
             {
+                case FunctionLevel.None:
+                    return "";
                 case FunctionLevel.First:
-                    return CalculateYFirstLevel(x);
+                    return $"f(x) = {Polynom.First()}x + {Polynom.Last()}";
                 case FunctionLevel.Second:
-                    return CalculateYSecondLevel(x);
+                    return $"f(x) = {Polynom.First()}x² + {Polynom[1]}x + {Polynom.Last()}";
                 case FunctionLevel.Third:
-                    return CalculateYThirdLevel(x);
+                    return $"f(x) = {Polynom.First()}x³ + {Polynom[1]}x² + {Polynom[2]}x + {Polynom.Last()}";
                 case FunctionLevel.Fourth:
-                    return CalculateYFourthLevel(x);
+                    return $"f(x) = {Polynom.First()}x{'\u2074'} + {Polynom[1]}x³ + {Polynom[2]}x² + {Polynom[3]}x + {Polynom.Last()}"; //Superscript chars
                 default:
-                    return default;
+                    return "";
             }
-        }
-
-        private double CalculateYFourthLevel(double x)
-        {
-            return FourthCoefficient * Math.Pow(x, 4) + ThirdCoefficient * Math.Pow(x, 3) +
-                   SecondCoefficient * Math.Pow(x, 2) + FirstCoefficient * x + B;
-        }
-
-        private double CalculateYThirdLevel(double x)
-        {
-            return ThirdCoefficient * Math.Pow(x, 3) +
-                   SecondCoefficient * Math.Pow(x, 2) + FirstCoefficient * x + B;
-        }
-
-        private double CalculateYSecondLevel(double x)
-        {
-            return SecondCoefficient * Math.Pow(x, 2) + FirstCoefficient * x + B;
-        }
-
-        private double CalculateYFirstLevel(double x)
-        {
-            return FirstCoefficient * x + B;
         }
     }
 
     public enum FunctionLevel
     {
+        None,
         First,
         Second,
         Third,

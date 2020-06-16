@@ -10,24 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Funktionenplotter.UserControls
 {
     /// <summary>
-    /// Interaction logic for GraphMenu.xaml
+    /// Interaction logic for IntegralSettings.xaml
     /// </summary>
-    public partial class GraphMenu : UserControl
+    public partial class IntegralSettings : Window
     {
-        public GraphMenu()
+        public IntegralSettings()
         {
             InitializeComponent();
-        }
-
-        private void CalculateIntegral_Click(object sender, RoutedEventArgs e)
-        {
-            new IntegralSettings().ShowDialog();
         }
     }
 }

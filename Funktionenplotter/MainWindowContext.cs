@@ -19,11 +19,12 @@ namespace Funktionenplotter
 {
     public class MainWindowContext : INotifyPropertyChanged
     {
-        public string FourthCoefficientGraph { get; set; } = "0.5";
-        public string ThirdCoefficientGraph { get; set; } = "-3";
-        public string SecondCoefficientGraph { get; set; } = "5";
-        public string FirstCoefficientGraph { get; set; } = "-2";
-        public string B { get; set; } = "0.5";
+        public string LogText { get; set; }
+        public string FourthCoefficientGraph { get; set; } = "";
+        public string ThirdCoefficientGraph { get; set; } = "0.667";
+        public string SecondCoefficientGraph { get; set; } = "6";
+        public string FirstCoefficientGraph { get; set; } = "13.333";
+        public string B { get; set; } = "8";
         public GraphMenuContext GraphMenuContext { get; set; }
         public PointCollection BluePoints { get; set; } = new PointCollection();
         public PointCollection RedPoints { get; set; } = new PointCollection();
@@ -38,6 +39,8 @@ namespace Funktionenplotter
         public bool SinusChecked { get; set; }
         public bool CosinusChecked { get; set; }
         public List<string> ZeroPoints { get; set; }
+        public List<string> TurningPoints { get; set; }
+        public List<string> SaddlePoints { get; set; }
         public ICommand ShowValueTableCommand => new DelegateCommand(ShowValueTableForGraph);
 
         public MainWindowContext()
@@ -59,10 +62,11 @@ namespace Funktionenplotter
                 return;
 
             ZeroPoints = new List<string>();
+            SaddlePoints = new List<string>();
+            TurningPoints = new List<string>();
             RedPoints = new PointCollection();
             GreenPoints = new PointCollection();
             BluePoints = new PointCollection();
-
             var bluePoints = new PointCollection();
             var redPoints = new PointCollection();
             var greenPoints = new PointCollection();
@@ -71,9 +75,13 @@ namespace Funktionenplotter
             var func = new Function(FourthCoefficientGraph, ThirdCoefficientGraph, SecondCoefficientGraph, FirstCoefficientGraph, B);
 
             foreach (var p in func.ZeroPoints)
-            {
                 ZeroPoints.Add($"X: {p.X:0.00} | Y: {p.Y:0.00}");
-            }
+
+            foreach (var p in func.TurningPoints)
+                TurningPoints.Add($"X: {p.X:0.00} | Y: {p.Y:0.00}");
+
+            foreach (var p in func.SaddlePoints)
+                SaddlePoints.Add($"X: {p.X:0.00} | Y: {p.Y:0.00}");
 
             for (var i = GraphMenuContext.GetMinXDouble(); i < GraphMenuContext.GetMaxXDouble(); i += calcAccuracy)
             {
@@ -84,18 +92,23 @@ namespace Funktionenplotter
                     greenPoints.Add(new Point(i, CalculateYForCoSinusX(i)));
             }
 
-            if (GraphMenuContext.CalculateFirstDerivative && func.Level != FunctionLevel.First)
+            if (GraphMenuContext.CalculateFirstDerivative && func.FirstDerivative != null)
                 for (var i = GraphMenuContext.GetMinXDouble(); i < GraphMenuContext.GetMaxXDouble(); i += calcAccuracy)
-                    greenPoints.Add(new Point(i, func.CalculateFirstDerivative(i)));
+                    greenPoints.Add(new Point(i, func.FirstDerivative.CalculateYForX(i)));
 
-            if (GraphMenuContext.CalculateSecondDerivative && (func.Level == FunctionLevel.Third || func.Level == FunctionLevel.Fourth))
+            if (GraphMenuContext.CalculateSecondDerivative && func.SecondDerivative != null)
                 for (var i = GraphMenuContext.GetMinXDouble(); i < GraphMenuContext.GetMaxXDouble(); i += calcAccuracy)
-                    redPoints.Add(new Point(i, func.CalculateSecondDerivative(i)));
+                    redPoints.Add(new Point(i, func.SecondDerivative.CalculateYForX(i)));
 
             ToValueTableBtnEnabled = true;
             RedPoints = redPoints;
             GreenPoints = greenPoints;
             BluePoints = bluePoints;
+            LogText = $"Funktion: '{func}'";
+            if (func.FirstDerivative != null)
+                LogText += $" mit der ersten Ableitung: {func.FirstDerivative}";
+            if (func.SecondDerivative != null)
+                LogText += $" und der zweiten: {func.SecondDerivative}";
             UpdateView();
         }
 
@@ -128,9 +141,12 @@ namespace Funktionenplotter
             OnPropertyChanged("StrokeThicknessLine");
             OnPropertyChanged("ToValueTableBtnEnabled");
             OnPropertyChanged("BluePoints");
-            OnPropertyChanged("GreenPoints"); 
+            OnPropertyChanged("GreenPoints");
             OnPropertyChanged("RedPoints");
             OnPropertyChanged("ZeroPoints");
+            OnPropertyChanged("TurningPoints");
+            OnPropertyChanged("SaddlePoints");
+            OnPropertyChanged("LogText");
         }
     }
 }

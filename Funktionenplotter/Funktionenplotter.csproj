@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataObjects\Derivative.cs" />
     <Compile Include="DataObjects\Function.cs" />
     <Compile Include="MainWindowContext.cs" />
     <Compile Include="Helper.cs" />
@@ -65,10 +66,14 @@
     <Compile Include="UserControls\Header.xaml.cs">
       <DependentUpon>Header.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\IntegralSettings.xaml.cs">
+      <DependentUpon>IntegralSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ValueTable.xaml.cs">
       <DependentUpon>ValueTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utility\DelegateCommand.cs" />
+    <Compile Include="Utility\MathOperations.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,6 +91,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\Header.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\IntegralSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
