@@ -12,7 +12,7 @@
             <RowDefinition Height="7*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <CheckBox Foreground="White" VerticalAlignment="Center" Grid.Row="0">Integral berechnen</CheckBox>
+        <CheckBox x:Name="PlotIntegral" Foreground="White" VerticalAlignment="Center" Grid.Row="0">Integral zeichnen</CheckBox>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
@@ -20,10 +20,10 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" Foreground="White" FontSize="90" Margin="0,0,0,20">∫</TextBlock>
-            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" FontSize="50" Margin="75,32,0,41" Grid.Row="1"><Run Text="f(x) -x dx"/></TextBlock>
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" FontSize="50" Margin="75,32,0,41" Grid.Row="1"><Run Text="f(x) dx"/></TextBlock>
         </Grid>
-        <Button Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left">Speichern</Button>
-        <TextBox HorizontalAlignment="Left" Height="18" Margin="47,10,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="35"/>
-        <TextBox HorizontalAlignment="Left" Height="18" Margin="47,113,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="35" RenderTransformOrigin="0.649,5.292"/>
+        <Button Click="ButtonBase_OnClick" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Left">Speichern</Button>
+        <TextBox x:Name="UpperIntegralBorder" HorizontalAlignment="Left" Height="18" Margin="47,10,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="35"/>
+        <TextBox x:Name="LowerIntegralBorder" HorizontalAlignment="Left" Height="18" Margin="47,113,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="35" RenderTransformOrigin="0.649,5.292"/>
     </Grid>
 </Window>

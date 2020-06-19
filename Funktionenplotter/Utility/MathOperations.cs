@@ -70,5 +70,57 @@ namespace Funktionenplotter.Utility
 
             return result;
         }
+
+        /// <summary>
+        /// Integrates a polynom
+        /// </summary>
+        /// <returns></returns>
+        public static double Integrate(List<double> upperPolynomial, double upperBorder, double lowerBorder)
+        {
+            var antiDerivative = GetAntiDerivative(upperPolynomial);
+
+            return Math.Abs(CalculateYForX(antiDerivative, upperBorder) - CalculateYForX(antiDerivative, lowerBorder)); //An area is always absolute
+        }
+
+        /// <summary>
+        /// Calculates the anti derivative (Stammfunktion)
+        /// </summary>
+        /// <returns>anti derivative</returns>
+        public static List<double> GetAntiDerivative(List<double> polynom)
+        {
+            var antiDerivative = new List<double>();
+
+            for (var i = 0; i < polynom.Count; i++)
+            {
+                var asdd = 1.0 / (polynom.Count - i);
+                var asd = polynom[i] * asdd;
+
+                antiDerivative.Add(asd);
+            }
+
+            antiDerivative.Add(0); //b hinzufügen damit nach der logik auch funktion n+1 grades ist
+
+            return antiDerivative;
+        }
+
+        /// <summary>
+        /// Calculates y for x with any given function
+        /// </summary>
+        /// <param name="polynom">Any given polynomial function</param>
+        /// <param name="x">x</param>
+        /// <returns></returns>
+        public static double CalculateYForX(List<double> polynom, double x)
+        {
+            var result = 0.0;
+
+            for (var i = 0; i < polynom.Count - 1; i++)
+            {
+                result += polynom[i] * Math.Pow(x, polynom.Count - 1 - i);
+            }
+
+            result += polynom.Last();
+
+            return result;
+        }
     }
 }

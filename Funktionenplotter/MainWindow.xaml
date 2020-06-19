@@ -42,18 +42,27 @@
                 Stroke="LightGreen"
                 StrokeThickness="{Binding StrokeThicknessLine}"/>
         </Canvas>
-        <TextBlock x:Name="DisplayPointX" Grid.Row="1" Grid.Column="0" Foreground="White" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Width="60" Height="15"></TextBlock>
-        <TextBlock x:Name="DisplayPointY" Grid.Row="1" Grid.Column="0" Foreground="White" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0, 23, 10, 0" Width="60" Height="15"></TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="0" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0, 10, 15, 0">
+            <TextBlock HorizontalAlignment="Left" x:Name="DisplayPointX" Foreground="White" Background="Transparent" Margin="5" Width="60" Height="15"></TextBlock>
+            <TextBlock HorizontalAlignment="Left" x:Name="DisplayPointY" Foreground="White" Background="Transparent" Margin="5" Width="60" Height="15"></TextBlock>
+            <TextBlock HorizontalAlignment="Left" x:Name="Krümmung" Foreground="White" Background="Transparent" Margin="5" Height="15"></TextBlock>
+            <TextBlock HorizontalAlignment="Left" x:Name="Steigung" Foreground="White" Background="Transparent" Margin="5" Width="60" Height="15"></TextBlock>
+        </StackPanel>
         <Button Command="{Binding ShowValueTableCommand}" Visibility="{Binding ToValueTableBtnEnabled, Converter={StaticResource BoolToVis}}" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Content="Zur Wertetabelle"></Button>
-        <StackPanel Margin="10" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <StackPanel MouseLeave="ZeroPointList_OnMouseLeave" Margin="10" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top">
             <TextBlock Margin="0,0,0,10" Foreground="White">Nullstellen</TextBlock>
-            <ListView SelectionChanged="ZeroPointList_OnSelectionChanged" x:Name="ZeroPointList" Foreground="White" Background="Transparent" BorderThickness="0" Margin="0, 0, 0, 10" ItemsSource="{Binding ZeroPoints}"></ListView>
+            <ListView SelectionChanged="ZeroPointList_OnMouseMove" x:Name="ZeroPointList" Foreground="White" Background="Transparent" BorderThickness="0" Margin="0, 0, 0, 10" ItemsSource="{Binding ZeroPoints}"></ListView>
             <TextBlock Margin="0,0,0,10" Foreground="White">Wendepunkte</TextBlock>
             <ListView Foreground="White" Background="Transparent" BorderThickness="0" Margin="0, 0, 0, 10" ItemsSource="{Binding TurningPoints}"></ListView>
             <TextBlock Margin="0,0,0,10" Foreground="White">Sattelpunkte</TextBlock>
             <ListView Foreground="White" Background="Transparent" BorderThickness="0" Margin="0, 0, 0, 10" ItemsSource="{Binding SaddlePoints}"></ListView>
+            <TextBlock Margin="0,0,0,10" Foreground="White">Extrempunkte</TextBlock>
+            <ListView Foreground="White" Background="Transparent" BorderThickness="0" Margin="0, 0, 0, 10" ItemsSource="{Binding ExtremePoints}"></ListView>
+            <Separator/>
+            <TextBlock Margin="0,0,0,10" Foreground="White">Integral Infos:</TextBlock>
+            <ListView x:Name="IntegralInfos" SelectionChanged="Selector_OnSelectionChanged" Foreground="White" Background="Transparent" BorderThickness="0" Margin="0, 0, 0, 10" ItemsSource="{Binding IntegralInfos}"></ListView>
         </StackPanel>
-
+        <ListView BorderThickness="0" Foreground="White" Background="Transparent" ItemsSource="{Binding Functions}"  Margin="10" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"></ListView>
         <!--Canvas end-->
 
         <!--header-->

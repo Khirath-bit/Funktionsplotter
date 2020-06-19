@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,10 +22,10 @@ namespace Funktionenplotter
     {
         public string LogText { get; set; }
         public string FourthCoefficientGraph { get; set; } = "";
-        public string ThirdCoefficientGraph { get; set; } = "0.667";
-        public string SecondCoefficientGraph { get; set; } = "6";
-        public string FirstCoefficientGraph { get; set; } = "13.333";
-        public string B { get; set; } = "8";
+        public string ThirdCoefficientGraph { get; set; } = "1";
+        public string SecondCoefficientGraph { get; set; } = "";
+        public string FirstCoefficientGraph { get; set; } = "-9";
+        public string B { get; set; } = "0";
         public GraphMenuContext GraphMenuContext { get; set; }
         public PointCollection BluePoints { get; set; } = new PointCollection();
         public PointCollection RedPoints { get; set; } = new PointCollection();
@@ -41,6 +42,10 @@ namespace Funktionenplotter
         public List<string> ZeroPoints { get; set; }
         public List<string> TurningPoints { get; set; }
         public List<string> SaddlePoints { get; set; }
+        public List<string> ExtremePoints { get; set; }
+        public List<string> IntegralInfos { get; set; }
+        public List<string> Functions { get; set; }
+        public Function CurrentFunction { get; set; }
         public ICommand ShowValueTableCommand => new DelegateCommand(ShowValueTableForGraph);
 
         public MainWindowContext()
@@ -63,7 +68,10 @@ namespace Funktionenplotter
 
             ZeroPoints = new List<string>();
             SaddlePoints = new List<string>();
+            ExtremePoints = new List<string>();
             TurningPoints = new List<string>();
+            IntegralInfos = new List<string>();
+            Functions = new List<string>();
             RedPoints = new PointCollection();
             GreenPoints = new PointCollection();
             BluePoints = new PointCollection();
@@ -74,6 +82,11 @@ namespace Funktionenplotter
 
             var func = new Function(FourthCoefficientGraph, ThirdCoefficientGraph, SecondCoefficientGraph, FirstCoefficientGraph, B);
 
+            Functions.Add($"Integral: {Helper.FunctionToString(MathOperations.GetAntiDerivative(func.Polynom))}");
+            Functions.Add($"Root:     {func}");
+            Functions.Add($"1. Abl:   {func.FirstDerivative}");
+            Functions.Add($"2. Abl:   {func.SecondDerivative}");
+
             foreach (var p in func.ZeroPoints)
                 ZeroPoints.Add($"X: {p.X:0.00} | Y: {p.Y:0.00}");
 
@@ -83,9 +96,24 @@ namespace Funktionenplotter
             foreach (var p in func.SaddlePoints)
                 SaddlePoints.Add($"X: {p.X:0.00} | Y: {p.Y:0.00}");
 
+            foreach (var p in func.ExtremePoints)
+                ExtremePoints.Add($"X: {p.X:0.00} | Y: {p.Y:0.00}");
+
+            if (GraphMenuContext.SavedIntegralSettings)
+            {
+                var area = MathOperations.Integrate(func.Polynom, GraphMenuContext.UpperIntegralBorder,
+                    GraphMenuContext.LowerIntegralBorder);
+
+                IntegralInfos.Add($"Fläche unter x: {area:0.00}FE²");
+            }
+
+            var antiDerivative = MathOperations.GetAntiDerivative(func.Polynom); //Stammfunktion
+
             for (var i = GraphMenuContext.GetMinXDouble(); i < GraphMenuContext.GetMaxXDouble(); i += calcAccuracy)
             {
                 bluePoints.Add(new Point(i, func.CalculateYForX(i)));
+                if(GraphMenuContext.PlotIntegral)
+                    redPoints.Add(new Point(i, MathOperations.CalculateYForX(antiDerivative, i)));
                 if (SinusChecked)
                     redPoints.Add(new Point(i, CalculateYForSinusX(i)));
                 if (CosinusChecked)
@@ -104,12 +132,9 @@ namespace Funktionenplotter
             RedPoints = redPoints;
             GreenPoints = greenPoints;
             BluePoints = bluePoints;
-            LogText = $"Funktion: '{func}'";
-            if (func.FirstDerivative != null)
-                LogText += $" mit der ersten Ableitung: {func.FirstDerivative}";
-            if (func.SecondDerivative != null)
-                LogText += $" und der zweiten: {func.SecondDerivative}";
             UpdateView();
+
+            CurrentFunction = func;
         }
 
         public double CalculateYForSinusX(double x)
@@ -146,6 +171,9 @@ namespace Funktionenplotter
             OnPropertyChanged("ZeroPoints");
             OnPropertyChanged("TurningPoints");
             OnPropertyChanged("SaddlePoints");
+            OnPropertyChanged("ExtremePoints");
+            OnPropertyChanged("IntegralInfos");
+            OnPropertyChanged("Functions");
             OnPropertyChanged("LogText");
         }
     }

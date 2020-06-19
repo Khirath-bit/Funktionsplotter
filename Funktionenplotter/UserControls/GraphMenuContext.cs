@@ -26,10 +26,16 @@ namespace Funktionenplotter.UserControls
 
         public string YMin { get; set; } = "-10";
 
-        public string CalculationAccuracy { get; set; } = "1";
+        public string CalculationAccuracy { get; set; } = "0.01";
 
         public bool CalculateFirstDerivative { get; set; }
         public bool CalculateSecondDerivative { get; set; }
+        public bool SavedIntegralSettings { get; set; }
+
+        public double UpperIntegralBorder { get; set; }
+
+        public double LowerIntegralBorder { get; set; }
+        public bool PlotIntegral { get; set; }
 
         public GraphMenuContext(Action<object> plotterFunction)
         {
@@ -40,6 +46,21 @@ namespace Funktionenplotter.UserControls
         /// The plotter command delegation
         /// </summary>
         public ICommand PlotterCommand => new DelegateCommand(ExecutePlotterCommand);
+
+        public ICommand OpenIntegralOptionsCommand => new DelegateCommand(OpenIntegralOptions);
+
+
+        private void OpenIntegralOptions(object param)
+        {
+            var settings = new IntegralSettings();
+            if (settings.ShowDialog() == null && settings.Saved) 
+                return;
+
+            SavedIntegralSettings = settings.Saved;
+            UpperIntegralBorder = settings.UpperIntegralBorderValue;
+            LowerIntegralBorder = settings.LowerIntegralBorderValue;
+            PlotIntegral = settings.PlotIntegralValue;
+        }
 
         /// <summary>
         /// Executes the plotter command

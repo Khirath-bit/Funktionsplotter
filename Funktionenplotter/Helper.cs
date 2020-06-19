@@ -46,6 +46,27 @@ namespace Funktionenplotter
 
             return !double.TryParse(y, out var yVal) ? default : yVal;
         }
+
+        public static string FunctionToString(List<double> func)
+        {
+            switch (func.Count)
+            {
+                case 1:
+                    return $"f(x) = {func.First()}";
+                case 2:
+                    return $"f(x) = {func.First()}x + {func.Last()}";
+                case 3:
+                    return $"f(x) = {func.First()}x² + {func[1]}x + {func.Last()}";
+                case 4:
+                    return $"f(x) = {func.First()}x³ + {func[1]}x² + {func[2]}x + {func.Last()}";
+                case 5:
+                    return $"f(x) = {func.First()}x{ '\u2074'} + {func[1]}x³ + {func[2]}x² + {func[3]}x + {func.Last()}";
+                case 6:
+                    return $"f(x) = {func.First()}x{ '\u2075'} + {func[1]}x{ '\u2074'} + {func[2]}x³ + {func[3]}x² + {func[4]}x + {func.Last()}";
+                default:
+                    return "";
+            }
+        }
     }
 
     public enum Axis

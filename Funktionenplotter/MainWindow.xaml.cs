@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Funktionenplotter.DataObjects;
+using Funktionenplotter.UserControls;
 
 namespace Funktionenplotter
 {
@@ -31,10 +33,38 @@ namespace Funktionenplotter
 
         private void Graph_MouseMove(object sender, MouseEventArgs e)
         {
+            if (!(DataContext is MainWindowContext context))
+                return;
+
             var currentPos = e.GetPosition(MainFunctionLine);
 
             DisplayPointX.Text = $"X: {currentPos.X}";
             DisplayPointY.Text = $"Y: {currentPos.Y}";
+
+
+            var y1 = context.CurrentFunction.FirstDerivative.CalculateYForX(currentPos.X);
+
+            if (y1 == 0)
+                Steigung.Text = "Waagerecht";
+            else
+                Steigung.Text = y1 < 0
+                    ? "Senkung"
+                    : "Steigung";
+
+
+            if (context.CurrentFunction.Level == FunctionLevel.First)
+                return;
+
+            var y = context.CurrentFunction.SecondDerivative.CalculateYForX(currentPos.X);
+
+            if (y == 0)
+                Krümmung.Text = "Keine Krümmung";
+            else
+            {
+                Krümmung.Text = y < 0
+                    ? "Rechtskrümmung"
+                    : "Linkskrümmung";
+            }
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -46,13 +76,34 @@ namespace Funktionenplotter
             context.ActualWidthGraph = (int)GraphCol.ActualWidth;
         }
 
-        private void ZeroPointList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ZeroPointList_OnMouseLeave(object sender, MouseEventArgs e)
         {
+            var remove = new List<UIElement>();
 
-            return;
+            for (var i = 0; i < Graph.Children.Count; i++)
+            {
+                if (Graph.Children[i] is Line line && (string)line.Tag == "cross"
+                   || Graph.Children[i] is Polygon poly && (string)poly.Tag == "polygon")
+                    remove.Add(Graph.Children[i]);
+            }
+
+            foreach (var child in remove)
+            {
+                Graph.Children.Remove(child);
+            }
+
+            ZeroPointList.SelectedIndex = -1;
+            IntegralInfos.SelectedIndex = -1;
+        }
+
+        private void ZeroPointList_OnMouseMove(object sender, SelectionChangedEventArgs e)
+        {
+            if (ZeroPointList.SelectedIndex == -1)
+                return;
+
             if (!(DataContext is MainWindowContext context))
                 return;
-            
+
             var pointFivePercent = (context.GraphMenuContext.GetMaxXDouble() - context.GraphMenuContext.GetMinXDouble()) * 0.005;
 
             var x = Helper.ParseX(ZeroPointList.SelectedValue?.ToString());
@@ -86,7 +137,7 @@ namespace Funktionenplotter
 
             foreach (var child in Graph.Children)
             {
-                if(child is Line line && ReferenceEquals(line.Tag, "cross"))
+                if (child is Line line && ReferenceEquals(line.Tag, "cross"))
                     childsToRemove.Add(line);
             }
 
@@ -97,6 +148,30 @@ namespace Funktionenplotter
 
             Graph.Children.Add(line2);
             Graph.Children.Add(line1);
+        }
+
+        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!(DataContext is MainWindowContext context) || !double.TryParse(context.GraphMenuContext.CalculationAccuracy, out var calcAccuracy))
+                return;
+
+            var polygon = new Polygon();
+            var points = new PointCollection();
+
+            polygon.Fill = new SolidColorBrush(Color.FromRgb(0, 0, 255));
+            polygon.Opacity = 0.1;
+            polygon.StrokeThickness = MainFunctionLine.StrokeThickness;
+            polygon.Tag = "polygon";
+
+            points.Add(new Point(context.GraphMenuContext.UpperIntegralBorder, 0));
+            points.Add(new Point(context.GraphMenuContext.LowerIntegralBorder, 0));
+
+            for (var i = context.GraphMenuContext.LowerIntegralBorder; i < context.GraphMenuContext.UpperIntegralBorder; i += calcAccuracy)
+                points.Add(new Point(i, context.CurrentFunction.CalculateYForX(i)));
+
+            polygon.Points = points;
+
+            Graph.Children.Add(polygon);
         }
     }
 }

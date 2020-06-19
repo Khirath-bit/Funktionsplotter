@@ -18,10 +18,10 @@ namespace Funktionenplotter.DataObjects
             if (!string.IsNullOrWhiteSpace(fourthCo)
                 && double.TryParse(fourthCo, out var fourthCoe))
             {
-                if(Level == FunctionLevel.None)
+                if (Level == FunctionLevel.None)
                     Level = FunctionLevel.Fourth;
                 Polynom.Add(fourthCoe);
-            } 
+            }
 
             if (!string.IsNullOrWhiteSpace(thirdCo)
                 && double.TryParse(thirdCo, out var thirdCoe))
@@ -29,7 +29,8 @@ namespace Funktionenplotter.DataObjects
                 if (Level == FunctionLevel.None)
                     Level = FunctionLevel.Third;
                 Polynom.Add(thirdCoe);
-            } else if (Polynom.Count > 0)
+            }
+            else if (Polynom.Count > 0)
             {
                 Polynom.Add(0);
             }
@@ -67,11 +68,12 @@ namespace Funktionenplotter.DataObjects
 
             FirstDerivative = new Derivative(Polynom);
 
-            if(Level != FunctionLevel.First)
+            if (Level != FunctionLevel.First)
                 SecondDerivative = new Derivative(FirstDerivative.Polynom);
 
             CalculateZeroPoints();
             CalculateTurningPoints();
+            CalculateExtemePoints();
         }
 
         public List<double> Polynom { get; set; } = new List<double>();
@@ -83,20 +85,61 @@ namespace Funktionenplotter.DataObjects
         public Derivative FirstDerivative { get; set; }
         public Derivative SecondDerivative { get; set; }
 
+        private void CalculateExtemePoints()
+        {
+            ExtremePoints = new List<Point>();
+            switch (Level)
+            {
+                case FunctionLevel.First:
+                case FunctionLevel.None:
+                    return;
+                case FunctionLevel.Third:
+                case FunctionLevel.Second:
+                    {
+                        var xssec = FirstDerivative.CalculateXsForY(0);
+
+                        foreach (var xsec in xssec)
+                        {
+                            ExtremePoints.Add(new Point(xsec, CalculateYForX(xsec)));
+                        }
+
+                        break;
+                    }
+            }
+
+            if (Level != FunctionLevel.Fourth)
+                return;
+
+            var x = 0.0;
+
+            //Newton verfahren || approximation
+            for (var i = 0; i < 100; i++)
+                x -= FirstDerivative.CalculateYForX(x) / SecondDerivative.CalculateYForX(x);
+
+            var quadFormula = MathOperations.PolynomialDivision(FirstDerivative.Polynom, new List<double> { 1, -x });
+
+            var xs = MathOperations.ApplyQuadraticFormula(quadFormula);
+
+            if (xs == null)
+                return;
+
+            ExtremePoints.Add(new Point(x, CalculateYForX(x)));
+            ExtremePoints.AddRange(xs.Select(s => new Point(s.X, CalculateYForX(s.X))));
+
+        }
         private void CalculateTurningPoints()
         {
             TurningPoints = new List<Point>();
             SaddlePoints = new List<Point>();
 
-            if(Level == FunctionLevel.First || Level == FunctionLevel.None || Level == FunctionLevel.Second)
+            if (Level == FunctionLevel.First || Level == FunctionLevel.None || Level == FunctionLevel.Second)
                 return;
 
             var xs = SecondDerivative.CalculateXsForY(0);
-            
 
             foreach (var x in xs)
             {
-                if (SecondDerivative.CalculateYForX(x) == 0)
+                if (FirstDerivative.CalculateYForX(x) == 0)
                     SaddlePoints.Add(new Point(x, CalculateYForX(x)));
                 else
                     TurningPoints.Add(new Point(x, CalculateYForX(x)));
@@ -126,7 +169,7 @@ namespace Funktionenplotter.DataObjects
         {
             ZeroPoints.Add(new Point(0, Polynom.Last()));
 
-            if(Polynom.Last() == 0)
+            if (Polynom.Last() == 0)
                 return;
 
             var x = -Polynom.Last() / Polynom.First();
@@ -146,7 +189,6 @@ namespace Funktionenplotter.DataObjects
 
             ZeroPoints.Add(new Point(x1, 0));
             ZeroPoints.Add(new Point(x2, 0));
-            ZeroPoints.Add(new Point(0, Polynom.Last())); //x = 0 == b
         }
         private void CalculateZeroPointsThirdLevel()
         {
@@ -163,15 +205,14 @@ namespace Funktionenplotter.DataObjects
             //Mitternachtsformel
             var zeros = MathOperations.ApplyQuadraticFormula(func);
 
-            if(zeros != null)
+            if (zeros != null)
                 ZeroPoints.AddRange(zeros);
 
             ZeroPoints.Add(new Point(x, 0));
-            ZeroPoints.Add(new Point(0, Polynom.Last()));
         }
         private void CalculateZeroPointsFourthLevel()
         {
-            var x = 4.0;
+            var x = 0.0;
 
             //Newton verfahren
             for (var i = 0; i < 100; i++)
@@ -182,12 +223,11 @@ namespace Funktionenplotter.DataObjects
                 new List<double> { 1, -x });
 
             var funct = new Function("", func[0].ToString(), func[1].ToString(), func[2].ToString(), func[3].ToString());
-            funct.ZeroPoints?.RemoveAt(funct.ZeroPoints.Count-1); //y zero point is wrong for this graph
+            funct.ZeroPoints?.RemoveAt(funct.ZeroPoints.Count - 1); //y zero point is wrong for this graph
 
             if (funct.ZeroPoints != null)
                 ZeroPoints.AddRange(funct.ZeroPoints);
 
-            ZeroPoints.Add(new Point(0, Polynom.Last())); //x=0 remains only B
             ZeroPoints.Add(new Point(x, 0));
         }
         public double CalculateYForX(double x)
