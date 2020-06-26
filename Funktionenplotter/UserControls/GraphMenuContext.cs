@@ -18,6 +18,12 @@ namespace Funktionenplotter.UserControls
         /// </summary>
         private readonly Action<object> _plotterFunction;
 
+        private readonly Action _clearGraph;
+
+        public string LineMarginAxis { get; set; } = "1";
+
+        public string LineThickness { get; set; } = "1";
+
         public string XMin { get; set; } = "-10";
 
         public string XMax { get; set; } = "10";
@@ -37,15 +43,18 @@ namespace Funktionenplotter.UserControls
         public double LowerIntegralBorder { get; set; }
         public bool PlotIntegral { get; set; }
 
-        public GraphMenuContext(Action<object> plotterFunction)
+        public GraphMenuContext(Action<object> plotterFunction, Action clearGraph)
         {
             _plotterFunction = plotterFunction;
+            _clearGraph = clearGraph;
         }
 
         /// <summary>
         /// The plotter command delegation
         /// </summary>
         public ICommand PlotterCommand => new DelegateCommand(ExecutePlotterCommand);
+
+        public ICommand ClearGraphCommand => new DelegateCommand(param => _clearGraph());
 
         public ICommand OpenIntegralOptionsCommand => new DelegateCommand(OpenIntegralOptions);
 
@@ -104,6 +113,12 @@ namespace Funktionenplotter.UserControls
         public double GetMinXDouble() => double.TryParse(XMin, out var xMin) ? xMin : default;
 
         public double GetMaxXDouble() => double.TryParse(XMax, out var xMax) ? xMax : default;
+        public double GetMinYDouble() => double.TryParse(YMin, out var yMin) ? yMin : default;
 
+        public double GetMaxYDouble() => double.TryParse(YMax, out var yMax) ? yMax : default;
+
+        public double GetLineThickness() => double.TryParse(LineThickness, out var lt) ? lt : default;
+
+        public double GetLineMarginAxis() => double.TryParse(LineMarginAxis, out var lma) ? lma : default;
     }
 }

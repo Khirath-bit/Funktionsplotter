@@ -24,16 +24,9 @@ namespace Funktionenplotter
         public string FourthCoefficientGraph { get; set; } = "";
         public string ThirdCoefficientGraph { get; set; } = "1";
         public string SecondCoefficientGraph { get; set; } = "";
-        public string FirstCoefficientGraph { get; set; } = "-9";
+        public string FirstCoefficientGraph { get; set; } = "-5";
         public string B { get; set; } = "0";
         public GraphMenuContext GraphMenuContext { get; set; }
-        public PointCollection BluePoints { get; set; } = new PointCollection();
-        public PointCollection RedPoints { get; set; } = new PointCollection();
-        public PointCollection GreenPoints { get; set; } = new PointCollection();
-        public Transform RenderTransform { get; set; } = Transform.Parse("1 0 0 -1 0 0");
-        public double StrokeThicknessX { get; set; } = 1;
-        public double StrokeThicknessY { get; set; } = 1;
-        public double StrokeThicknessLine { get; set; } = 1;
         public int ActualHeightGraph { get; set; }
         public int ActualWidthGraph { get; set; }
         public bool ToValueTableBtnEnabled { get; set; }
@@ -47,15 +40,18 @@ namespace Funktionenplotter
         public List<string> Functions { get; set; }
         public Function CurrentFunction { get; set; }
         public ICommand ShowValueTableCommand => new DelegateCommand(ShowValueTableForGraph);
+        public CoordinateSystem CoordinateSystem { get; set; }
 
         public MainWindowContext()
         {
-            GraphMenuContext = new GraphMenuContext(Plot);
+            CoordinateSystem = new CoordinateSystem(true);
+            GraphMenuContext = new GraphMenuContext(Plot, CoordinateSystem.ClearChildren);
+            
         }
 
         private void ShowValueTableForGraph(object parameter)
         {
-            new ValueTable(BluePoints.ToList()).Show();
+            new ValueTable(CoordinateSystem.GetSelectedPolyline().Points.ToList()).Show();
         }
 
         /// <summary>
@@ -66,19 +62,19 @@ namespace Funktionenplotter
             if (!double.TryParse(GraphMenuContext.CalculationAccuracy, out var calcAccuracy))
                 return;
 
+            CoordinateSystem.ClearChildren();
+            CoordinateSystem.ClearPolylines();
             ZeroPoints = new List<string>();
             SaddlePoints = new List<string>();
             ExtremePoints = new List<string>();
             TurningPoints = new List<string>();
             IntegralInfos = new List<string>();
             Functions = new List<string>();
-            RedPoints = new PointCollection();
-            GreenPoints = new PointCollection();
-            BluePoints = new PointCollection();
             var bluePoints = new PointCollection();
             var redPoints = new PointCollection();
             var greenPoints = new PointCollection();
-
+            var pinkPoints = new PointCollection();
+            var yellowPoints = new PointCollection();
 
             var func = new Function(FourthCoefficientGraph, ThirdCoefficientGraph, SecondCoefficientGraph, FirstCoefficientGraph, B);
 
@@ -115,9 +111,9 @@ namespace Funktionenplotter
                 if(GraphMenuContext.PlotIntegral)
                     redPoints.Add(new Point(i, MathOperations.CalculateYForX(antiDerivative, i)));
                 if (SinusChecked)
-                    redPoints.Add(new Point(i, CalculateYForSinusX(i)));
+                    yellowPoints.Add(new Point(i, CalculateYForSinusX(i)));
                 if (CosinusChecked)
-                    greenPoints.Add(new Point(i, CalculateYForCoSinusX(i)));
+                    pinkPoints.Add(new Point(i, CalculateYForCoSinusX(i)));
             }
 
             if (GraphMenuContext.CalculateFirstDerivative && func.FirstDerivative != null)
@@ -129,9 +125,11 @@ namespace Funktionenplotter
                     redPoints.Add(new Point(i, func.SecondDerivative.CalculateYForX(i)));
 
             ToValueTableBtnEnabled = true;
-            RedPoints = redPoints;
-            GreenPoints = greenPoints;
-            BluePoints = bluePoints;
+            CoordinateSystem.AddPolyline(bluePoints, Brushes.DeepSkyBlue);
+            CoordinateSystem.AddPolyline(greenPoints, Brushes.LawnGreen);
+            CoordinateSystem.AddPolyline(redPoints, Brushes.Red);
+            CoordinateSystem.AddPolyline(yellowPoints, Brushes.Yellow);
+            CoordinateSystem.AddPolyline(pinkPoints, Brushes.BlueViolet);
             UpdateView();
 
             CurrentFunction = func;
@@ -156,14 +154,7 @@ namespace Funktionenplotter
 
         private void UpdateView()
         {
-            RenderTransform = GraphMenuContext.GetRenderTransform(ActualHeightGraph, ActualWidthGraph);
-            StrokeThicknessX = Helper.CalculateStrokeThicknessByTransform(RenderTransform, Axis.X);
-            StrokeThicknessY = Helper.CalculateStrokeThicknessByTransform(RenderTransform, Axis.Y);
-            StrokeThicknessLine = Helper.CalculateStrokeThicknessByTransform(RenderTransform, Axis.Line);
-            OnPropertyChanged("RenderTransform");
-            OnPropertyChanged("StrokeThicknessX");
-            OnPropertyChanged("StrokeThicknessY");
-            OnPropertyChanged("StrokeThicknessLine");
+            CoordinateSystem.Plot(GraphMenuContext.GetRenderTransform(ActualHeightGraph, ActualWidthGraph), GraphMenuContext);
             OnPropertyChanged("ToValueTableBtnEnabled");
             OnPropertyChanged("BluePoints");
             OnPropertyChanged("GreenPoints");
@@ -175,6 +166,7 @@ namespace Funktionenplotter
             OnPropertyChanged("IntegralInfos");
             OnPropertyChanged("Functions");
             OnPropertyChanged("LogText");
+            
         }
     }
 }

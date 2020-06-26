@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataObjects\CoordinateSystem.cs" />
     <Compile Include="DataObjects\Derivative.cs" />
     <Compile Include="DataObjects\Function.cs" />
     <Compile Include="MainWindowContext.cs" />
